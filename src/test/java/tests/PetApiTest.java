@@ -1,9 +1,11 @@
 package tests;
 
 import org.hamcrest.Matchers;
+import org.json.JSONObject;
 import org.junit.Test;
 import spec.RequestSpec;
-
+import java.util.HashMap;
+import java.util.Random;
 
 import static io.restassured.RestAssured.*;
 
@@ -15,18 +17,18 @@ public class PetApiTest extends RequestSpec {
 
     @Test
     public void postPet() {
-        String pet = "{\"id\":123,\"name\":\"Cesur\",\"status\":\"available\"}";
+        JSONObject pet = new JSONObject();
+        pet.put("id",123);
+        pet.put("name", "Cesur");
+        pet.put("status", "available");
 
         given()
                 .spec(getRequestSpecification())
-                .body(pet)
+                .body(new JSONObject(pet).toString())
         .when()
                 .post("/pet")
         .then()
                 .statusCode(200)
-                .body("id", Matchers.equalTo(123))
-                .body("name", Matchers.equalTo("Cesur"))
-                .body("status", Matchers.equalTo("available"))
                 .extract().response().print();
 
     }
@@ -34,14 +36,15 @@ public class PetApiTest extends RequestSpec {
     @Test
     public void getPet() {
 
+        int petId = 11;
+
         given()
                 .spec(getRequestSpecification())
-                .pathParam("id", 11)
+                .pathParam("id", petId)
         .when()
                 .get("/pet/{id}")
         .then()
                 .statusCode(200)
-                .body("id", Matchers.equalTo(11))
                 .extract().response().print();
     }
 
